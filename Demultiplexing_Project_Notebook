@@ -1,0 +1,110 @@
+Demultiplexing Project
+
+input file directory: cd /projects/bgmp/shared/2017_sequencing
+
+==============
+| 07/28/2020 |
+============== 
+objective: explore data and plan algorithm 
+
+    //headed all 4 files and investigated format
+        gzcat 1294_S1_L008_R[1-4]_001.fastq.gz | head
+            file 1 contains the read 1 biological sequence (R1)
+            file 2 contains the index 1 barcodes (R2)
+            file 3 contains the index 2 barcodes (R3)
+            file 4 contains the read 2 barcodes (R4)
+    //each record corresponds to the same read in each file so they must 
+        be iterated through simutaneously for max efficiency
+    //must organize reads from R1 and R4 files based on their barcode after verifying
+        that the barcodes match between the R1 and R4 records. 
+    //output will include;
+        24 files for the R1 organized by index
+        24 files for the R4 organized by index
+        2 files for R1 and R4 non-matching indexes 
+        2 files for poor read quality data (use averag phred to determine cutoff)
+    
+    //psedudo code
+    
+#first define mechanics functions
+def convertFred(ascii_char):
+    •use ord() to convert ascii to integer
+    •subtract 33 to get phred33 value
+
+#reverse complement 
+#function takes in a nucleotide sequence and returns the reverse complement of the squence
+def revComp(seq)
+    •initialize empty string rev_str = ''
+    •initialize dictionary of seq_dic = {'A':'T','G':'C','T':'A','C':'G'} to get complement
+     basepair of each nucleotide
+    •iterate through each sequence adding the complementary basepair to the front of the string
+    for nuc in seq:
+        rev_str = seq_dic[nuc] + rev_str
+    
+    return reverse complement string (rev_str)
+
+#make a record class to store each record as an obct on each iteration;
+class Record:
+    //attributes;
+        •the R1 record + avgQscore           (record_as_string, avg_phred_score) 
+        •the R2 index record + avgQscore     (record_as_string, avg_phred_score)
+        •the R3 index record + avgQscore     (record_as_string, avg_phred_score)
+        •the R4 record + avgQscore           (record_as_string, avg_phred_score)
+        •the R2 index   
+        •the R3 index (reverse complemented)
+        •a boolean value denoting if indexes match (boolean = R2_index == R3_index)
+        •updated reads indices added to headers 
+        
+    //methods;
+        •calculate average sequence quality score, given a record 
+        •reverse complement method as defined above
+        •add indices to header line
+
+#function to iterate through all 4 files simutaneously and extract each record from the files
+def mainRecordGrabbingFunction(file1, file2, file3, file4, index_file, q_cutoff):
+    •open all input files for reading
+    R1_file, R2_file, R3_file, R4_file with "r"
+    •initialize a dictionary of all 2 length permutations using the barcodes in the indexes file 
+        -store processes in a different function
+        -use itertools to get permutations
+   
+    •for (R1, R2, R3, R4) in R1_file, R2_file, R3_file, R4_file:
+        -read the next 3 lines using list complehension 
+        -use joined list to create record object using the r1, r2, r3, r4 reads
+        •if the average quality score of r2 or r3 < defined_cutoff:
+            -write out the r1 and r4 file reads to independent unknown/low_quality files (w/ indices in header)
+        •else if the boolean attribute of the record object indicates an error:
+            -write out the r1 and r4 file reads to independent mismatch files (w/ indices in header)
+            •if indices are keys in dic: 
+                -increment dictionary of permutations count by one using the indices as keys
+                -write out the r1 and r4 records to their independent index hopped files
+            •else:
+                -write to error files
+        •else:
+            -write out r1 and r4 reads to the their respctive indexed files [1 -> #_of _indices]
+        
+            
+            
+        
+
+==============
+| 07/30/2020 |
+============== 
+    // scp to talapas
+        scp /Users/jonasgrove/bioinformatics/Bi622/demultiplexing-Jonasgrove/Assignment-the-first/demultiplex_v1.py jonasg@talapas-ln1.uoregon.edu:/projects/bgmp/jonasg/bioinfo/622/projects
+    //go on the login nodes to see if iteration style works
+    //different way to open gzip files
+        import gzipimport iogz = gzip.open(in_path, 'rb')f = io.BufferedReader(gz)     for line in f:         # do stuffgz.close()
+    //scp from talapas
+        scp <yourDuckID>@talapas-ln1.uoregon.edu:/absolute/path/to/file/on/Talapas /path/on/your/computer
+    //file paths used for testing
+        r1_file = '/projects/bgmp/shared/2017_sequencing/1294_S1_L008_R1_001.fastq.gz'
+        r2_file = '/projects/bgmp/shared/2017_sequencing/1294_S1_L008_R2_001.fastq.gz'
+        r3_file = '/projects/bgmp/shared/2017_sequencing/1294_S1_L008_R3_001.fastq.gz'
+        r4_file = '/projects/bgmp/shared/2017_sequencing/1294_S1_L008_R4_001.fastq.gz'
+        '''
+        r1_file = '/projects/bgmp/jonasg/bioinfo/622/projects/demultiplex/r1_unit_test.fastq.gz'
+        r2_file = '/projects/bgmp/jonasg/bioinfo/622/projects/demultiplex/r2_unit_test.fastq.gz'
+        r3_file = '/projects/bgmp/jonasg/bioinfo/622/projects/demultiplex/r3_unit_test.fastq.gz'
+        r4_file = '/projects/bgmp/jonasg/bioinfo/622/projects/demultiplex/r4_unit_test.fastq.gz'
+        index_file = '/projects/bgmp/shared/2017_sequencing/indexes.txt'
+    

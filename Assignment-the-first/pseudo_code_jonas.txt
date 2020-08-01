@@ -1,0 +1,57 @@
+#first define mechanics functions
+def convertFred(ascii_char):
+    •use ord() to convert ascii to integer
+    •subtract 33 to get phred33 value
+
+#reverse complement 
+#function takes in a nucleotide sequence and returns the reverse complement of the squence
+def revComp(seq)
+    •initialize empty string rev_str = ''
+    •initialize dictionary of seq_dic = {'A':'T','G':'C','T':'A','C':'G'} to get complement
+     basepair of each nucleotide
+    •iterate through each sequence adding the complementary basepair to the front of the string
+    for nuc in seq:
+        rev_str = seq_dic[nuc] + rev_str
+    
+    return reverse complement string (rev_str)
+
+#make a record class to store each record as an obct on each iteration;
+class Record:
+    //attributes;
+        •the R1 record + avgQscore           (record_as_string, avg_phred_score) 
+        •the R2 index record + avgQscore     (record_as_string, avg_phred_score)
+        •the R3 index record + avgQscore     (record_as_string, avg_phred_score)
+        •the R4 record + avgQscore           (record_as_string, avg_phred_score)
+        •the R2 index   
+        •the R3 index (reverse complemented)
+        •a boolean value denoting if indexes match (boolean = R2_index == R3_index)
+        •updated reads indices added to headers 
+        
+    //methods;
+        •calculate average sequence quality score, given a record 
+        •reverse complement method as defined above
+        •add indices to header line
+
+#function to iterate through all 4 files simutaneously and extract each record from the files
+def mainRecordGrabbingFunction(file1, file2, file3, file4, index_file, q_cutoff):
+    •open all input files for reading
+    R1_file, R2_file, R3_file, R4_file with "r"
+    •initialize a dictionary of all 2 length permutations using the barcodes in the indexes file 
+        -store processes in a different function
+        -use itertools to get permutations
+   
+    •for (R1, R2, R3, R4) in R1_file, R2_file, R3_file, R4_file:
+        -read the next 3 lines using list complehension 
+        -use joined list to create record object using the r1, r2, r3, r4 reads
+        •if the average quality score of r2 or r3 < defined_cutoff:
+            -write out the r1 and r4 file reads to independent unknown/low_quality files (w/ indices in header)
+        •else if the boolean attribute of the record object indicates an error:
+            -write out the r1 and r4 file reads to independent mismatch files (w/ indices in header)
+            •if indices are keys in dic: 
+                -increment dictionary of permutations count by one using the indices as keys
+                -write out the r1 and r4 records to their independent index hopped files
+            •else:
+                -write to error files
+        •else:
+            -write out r1 and r4 reads to the their respctive indexed files [1 -> #_of _indices]
+        

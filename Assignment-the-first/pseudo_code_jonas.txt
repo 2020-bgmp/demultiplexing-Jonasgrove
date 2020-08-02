@@ -1,3 +1,5 @@
+#look in notebook for problem description in demultiplexing-Jonasgrove repo
+
 #first define mechanics functions
 def convertFred(ascii_char):
     •use ord() to convert ascii to integer

@@ -41,7 +41,10 @@ def mainRecordGrabbingFunction(file1, file2, file3, file4, index_file, q_cutoff)
     •initialize a dictionary of all 2 length permutations using the barcodes in the indexes file 
         -store processes in a different function
         -use itertools to get permutations
-   
+    •initialize dictionary with index sequence as key and open file as key
+        dictionary['AGTCT'] = open('index_file_name','w)
+        write out files using: dictionary[record_class.index].write() 
+    
     •for (R1, R2, R3, R4) in R1_file, R2_file, R3_file, R4_file:
         -read the next 3 lines using list complehension 
         -use joined list to create record object using the r1, r2, r3, r4 reads

@@ -9,7 +9,7 @@ def convertFred(ascii_char):
 #function takes in a nucleotide sequence and returns the reverse complement of the squence
 def revComp(seq)
     •initialize empty string rev_str = ''
-    •initialize dictionary of seq_dic = {'A':'T','G':'C','T':'A','C':'G'} to get complement
+    •initialize dictionary of seq_dic = {'A':'T','G':'C','T':'A','C':'G',N:N} to get complement
      basepair of each nucleotide
     •iterate through each sequence adding the complementary basepair to the front of the string
     for nuc in seq:

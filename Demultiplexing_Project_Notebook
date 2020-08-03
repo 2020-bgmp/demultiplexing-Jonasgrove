@@ -107,4 +107,36 @@ def mainRecordGrabbingFunction(file1, file2, file3, file4, index_file, q_cutoff)
         r3_file = '/projects/bgmp/jonasg/bioinfo/622/projects/demultiplex/r3_unit_test.fastq.gz'
         r4_file = '/projects/bgmp/jonasg/bioinfo/622/projects/demultiplex/r4_unit_test.fastq.gz'
         index_file = '/projects/bgmp/shared/2017_sequencing/indexes.txt'
-    
+
+==============
+| 08/01/2020 |
+============== 
+
+objective: complete part 1 graphs, finish demultiplexing, fix file but (makes too many files)
+
+    //changed part file such that it only taks one file as input with altered paramaters so 
+        that all of the graphs can be made at one time
+    //all 4 jobs were submitted to talapas using 4 different slurm scripts written as so
+        #!/bin/bash
+
+        #SBATCH --partition=bgmp        ### Partition (like a queue in PBS)
+        #SBATCH --job-name=illumina_qual_dist_r4        ### Job Name
+        #SBATCH --output=illumina_qual_dist_r4.out      ### File in which to store job output
+        #SBATCH --error=illumina_qual_dist_r4.err       ### File in which to store job error messages
+        #SBATCH --time=0-10:00:00       ### Wall clock time limit in Days-HH:MM:SS
+        #SBATCH --nodes=1               ### Number of nodes needed for the job
+        #SBATCH --ntasks-per-node=1     ### Number of tasks to be launched per Node
+        #SBATCH --account=bgmp          ### Account used for job submission
+
+        conda activate bgmp_py37
+
+        in_path=/projects/bgmp/shared/2017_sequencing
+        out_path=/projects/bgmp/jonasg/bioinfo/622/projects/demultiplex
+
+        python illumina_qual_dist.py -f $in_path/1294_S1_L008_R4_001.fastq.gz -o $out_path/R4_quality_dist -l 101 -t 'R4 Qulity Distribution'
+    //job submissions
+        sbatch illumina_qual_dist_slurm_r4.sh 
+    //graph job finished, but y scale is off, will adjust to make sure means are correct
+    //changed demultiplexing file writing structure such by making a dictionary 
+        {'index_sequence': file}
+        file_dic['index_sequence'] = open('file_name', 'w') #such 

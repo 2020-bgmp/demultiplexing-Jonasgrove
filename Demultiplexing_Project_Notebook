@@ -140,3 +140,10 @@ objective: complete part 1 graphs, finish demultiplexing, fix file but (makes to
     //changed demultiplexing file writing structure such by making a dictionary 
         {'index_sequence': file}
         file_dic['index_sequence'] = open('file_name', 'w') #such 
+
+==============
+| 08/02/2020 |
+============== 
+
+    //oops use this 
+        srun --account=bgmp --partition=bgmp --nodes=1 --ntasks-per-node=1 --time=1:00:00 --cpus-per-task=1 --pty bash

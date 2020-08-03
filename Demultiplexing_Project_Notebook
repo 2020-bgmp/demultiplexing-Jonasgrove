@@ -23,6 +23,19 @@ objective: explore data and plan algorithm
         2 files for R1 and R4 non-matching indexes 
         2 files for poor read quality data (use averag phred to determine cutoff)
     
+    //test file structure
+        4 fastq files (r1, r2, r3, r4) 
+        6 records in each files consisting of 
+    
+        read  |  out put files
+       ------------------------ 
+         1      correct match 
+         2      low quality
+         3      correct match
+         4      index hop
+         5      correct match
+         6      index hop
+
     //psedudo code
     
 #first define mechanics functions

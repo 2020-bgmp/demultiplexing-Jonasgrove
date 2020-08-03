@@ -2,12 +2,14 @@
 
 #first define mechanics functions
 def convertFred(ascii_char):
+    ```convert phred33 asci char to int```
     •use ord() to convert ascii to integer
     •subtract 33 to get phred33 value
 
 #reverse complement 
 #function takes in a nucleotide sequence and returns the reverse complement of the squence
 def revComp(seq)
+    ```taks the reverse complement of a list```
     •initialize empty string rev_str = ''
     •initialize dictionary of seq_dic = {'A':'T','G':'C','T':'A','C':'G',N:N} to get complement
      basepair of each nucleotide
@@ -19,6 +21,7 @@ def revComp(seq)
 
 #make a record class to store each record as an obct on each iteration;
 class Record:
+    ```class which will store each r1, r2, r3, and r4 record and quality information```
     //attributes;
         •the R1 record + avgQscore           (record_as_string, avg_phred_score) 
         •the R2 index record + avgQscore     (record_as_string, avg_phred_score)
@@ -36,6 +39,7 @@ class Record:
 
 #function to iterate through all 4 files simutaneously and extract each record from the files
 def mainRecordGrabbingFunction(file1, file2, file3, file4, index_file, q_cutoff):
+    '''iterates through 4 illumina files simutaneaously and sorts based on barcode, while trimming low quality data and index hopped reads'''
     •open all input files for reading
     R1_file, R2_file, R3_file, R4_file with "r"
     •initialize a dictionary of all 2 length permutations using the barcodes in the indexes file 

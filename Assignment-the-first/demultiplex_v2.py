@@ -10,7 +10,7 @@ def get_records(r1_file, r2_file, r3_file, r4_file, index_file, q_cutoff, path_o
 
     index_error_dic  = get_index_perms(index_file)
 
-    #open 42 files
+    #open 48 files
     r1_file_dic = files_dic(index_file, path_out, 'r1')
     r4_file_dic = files_dic(index_file, path_out, 'r4')
 

@@ -58,6 +58,11 @@ def get_records(r1_file, r2_file, r3_file, r4_file, index_file, q_cutoff, path_o
         hop_count_file.write(new_line)
     hop_count_file.close()
 
+    r1_ihop_file.close()
+    r4_ihop_file.close()
+    r1_er_file.close()
+    r4_er_file.close()
+
     return None
 
 def get_index_perms(index_file):

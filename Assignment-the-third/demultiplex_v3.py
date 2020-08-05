@@ -17,12 +17,12 @@ def get_index_perms(index_file):
         index_seq_list.append(seq)
         index_name_dic[seq] = name
 
-    index_count_dic = {index:0 for index in index_list}   #{AGTC:count}
-    index_error_dic = {perm:0 for perm in list(permutations(index_list, 2))}
+    index_count_dic = {index:0 for index in index_seq_list}   #{AGTC:count}
+    index_error_dic = {perm:0 for perm in list(permutations(index_seq_list, 2))}
 
     index_file.close()
 
-    for perm in list(permutations(index_list, 2)):
+    for perm in list(permutations(index_seq_list, 2)):
         index_error_dic[perm] = 0
     
     index_file.close()
@@ -39,20 +39,22 @@ def files_dic(index_file, path, extension):
         file_name = path + '/' + index_name + '_' + index_seq + '_' + extension + '.fastq' #path/C9_AGTC_r1.fastq
         file_dic[index_seq] = open(file_name, 'w')
 
+    index_file.close()
     return file_dic    
     
 def get_index_ratios(index_count_dic, num_records_out):
     for index in index_count_dic:
-        index_count_dic[index] = (index_count_dic/num_records_out)*100
+        index_count_dic[index] = (index_count_dic[index]/num_records_out)*100
     return index_count_dic
 
 def make_out_report(total_index_swapping, num_records_out, index_ratios, index_name_dic, total_error, path_out):
     out_report_file = open(path_out + '/dm_report.txt', 'w')
-    out_report_file.write('Total Reads Retained: ', num_records_out, '\n')
-    out_report_file.write('Total Index Hopping: ', total_index_swapping, '\n')
+    out_report_file.write('Total Reads Retained: ' + str(num_records_out) + '\n')
+    out_report_file.write('Total Index Hopping: ' + str(total_index_swapping) + '\n')
+    out_report_file.write('Total Error Records: ' + str(total_error) + '\n')
     out_report_file.write('sample_ID    sequence    sample_percentage\n')
     for index_seq in index_ratios.keys():
-        new_line = index_name_dic[index_seq] + '    ' + index_seq + '   ' + index_ratios[index_seq] + '\n'
+        new_line = index_name_dic[index_seq] + '    ' + index_seq + '   ' + str(index_ratios[index_seq]) + '\n'
         out_report_file.write(new_line)
     out_report_file.close()
 
@@ -65,7 +67,6 @@ def get_records(r1_file, r2_file, r3_file, r4_file, index_file, q_cutoff, path_o
     #open 42 files
     r1_file_dic = files_dic(index_file, path_out, 'r1')
     r4_file_dic = files_dic(index_file, path_out, 'r4')
-
     r1_ihop_file = open(path_out + '/r1_ihop.fastq', 'w')
     r4_ihop_file = open(path_out + '/r4_ihop.fastq', 'w')
     r1_er_file = open(path_out + '/r1_error.fastq', 'w')
@@ -85,30 +86,34 @@ def get_records(r1_file, r2_file, r3_file, r4_file, index_file, q_cutoff, path_o
             record_4  = ''.join([r4_line.decode("utf-8")] + [r4.readline().decode("utf-8") for i in range(3)])
             
             cur_record = Record(record_1, record_2, record_3, record_4)
-
+    
             if cur_record.r2_score < q_cutoff or cur_record.r3_score < q_cutoff:
                 r1_er_file.write(cur_record.r1_record)
                 r4_er_file.write(cur_record.r4_record)
                 total_error += 1
 
-            elif cur_record.error == True:
+            elif cur_record.error == True or cur_record.index_1 not in index_count_dic:
                 key = (cur_record.index_1, cur_record.index_2)
                 if key in index_error_dic:
                     r1_ihop_file.write(cur_record.r1_record)
                     r4_ihop_file.write(cur_record.r4_record)
                     index_error_dic[key] += 1
+                    total_index_swapping += 1
                 else:
                     r1_er_file.write(cur_record.r1_record)
                     r4_er_file.write(cur_record.r4_record)
                     total_error += 1
 
-            else:
+            else: 
                 r1_file_dic[cur_record.index_1].write(cur_record.r1_record)
                 r4_file_dic[cur_record.index_1].write(cur_record.r4_record)
                 index_count_dic[cur_record.index_1] += 1
                 num_records_out += 1
+        
 
-    index_ratios = get_index_ratios(index_count_dic, num_records_out)   
+    if num_records_out != 0:
+        index_count_dic = get_index_ratios(index_count_dic, num_records_out)  
+     
 
     ###close all 48 files in for loop
     for r1_key, r4_key in zip(r1_file_dic.keys(), r4_file_dic.keys()):
@@ -126,7 +131,7 @@ def get_records(r1_file, r2_file, r3_file, r4_file, index_file, q_cutoff, path_o
     r1_er_file.close()
     r4_er_file.close()
 
-    make_out_report(total_index_swapping, num_records_out, index_ratios, index_name_dic, total_error, path_out)
+    make_out_report(total_index_swapping, num_records_out, index_count_dic, index_name_dic, total_error, path_out)
 
     return None
 

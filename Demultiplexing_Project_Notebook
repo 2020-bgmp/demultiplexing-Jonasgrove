@@ -160,3 +160,12 @@ objective: complete part 1 graphs, finish demultiplexing, fix file but (makes to
 
     //oops use this 
         srun --account=bgmp --partition=bgmp --nodes=1 --ntasks-per-node=1 --time=1:00:00 --cpus-per-task=1 --pty bash
+
+
+==============
+| 08/04/2020 |
+============== 
+
+    //test run command
+in_path='/projects/bgmp/jonasg/bioinfo/622/projects/demultiplexing-Jonasgrove/TEST-input_FASTQ
+python demultiplex_v2.py -r1 $in_path/1294_S1_L008_R1_001.fastq.gz -r2 $in_path/1294_S1_L008_R2_001.fastq.gz -r3 $in_path/1294_S1_L008_R3_001.fastq.gz -r4 $in_path/1294_S1_L008_R4_001.fastq.gz -i $in_path/indexes.txt -p $out_path -q 20
